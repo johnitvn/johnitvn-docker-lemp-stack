@@ -2,4 +2,5 @@
 /docker/nginx/logs
 /docker/traefik/acme
 /docker/portainer
-/.env
+/docker/.env
+/docker/docker-compose.yml

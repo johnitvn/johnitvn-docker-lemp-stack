@@ -49,7 +49,9 @@ then
 
         # Delete ENV file if exists.
         if [ -f $DOCKER_ENV_FILE ]; then rm $DOCKER_ENV_FILE; fi
-
+        # Delete docker_composer file if exists.
+        if [ -f $DOCKER_COMPOSE_FILE ]; then rm $DOCKER_COMPOSE_FILE; fi
+   
         # Generate new ENV file.
         (
             echo # Don't delete this file if you want to run configuration script again.
@@ -61,9 +63,10 @@ then
 
 
         # Generate a new docker-compose file
-
-
-        
+        cp $DOCKER_COMPOSE_TEMPLATE_FILE docker-compose.yml
+        STEXT = 'REPLACE_DOMAIN_NAME'
+        sed -i 's/'$STEXT'/'$DOMAIN_NAME'/g'  $NGINX_CONF_FILE
+        echo "[Docker Compose]: Create and replacing '"$STEXT"' to '"$DOMAIN_NAME"' in docker compose file finished."
 
         echo "[CONFIGURE]: All PRODUCTION configuration done."
         echo "[WARNING]: Don't delete ENV file if you want to run this configuration again."
@@ -91,6 +94,7 @@ then
         # Delete ENV file if exists.
         if [ -f $DOCKER_ENV_FILE ]; then rm $DOCKER_ENV_FILE; fi
 
+
         # Generate new ENV file.
         (
             echo # Don't delete this file if you want to run configuration script again.
@@ -100,9 +104,7 @@ then
             echo COMPOSE_CONVERT_WINDOWS_PATHS=1
         )>$DOCKER_ENV_FILE
 
-        # Generate a new docker-compose file
-
-
+        
         echo "[CONFIGURE]: All LOCALHOST configuration done."
         echo "[WARNING]: Don't delete ENV file if you want to run this configuration again."
 

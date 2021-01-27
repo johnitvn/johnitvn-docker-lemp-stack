@@ -10,6 +10,8 @@ STACK_CONFIGURED=false
 # File references.
 CONFIGURE_SCRIPT=$SCRIPT_PATH'/configure.sh'
 DOCKER_ENV_FILE=$SCRIPT_PATH'/.env'
+DOCKER_COMPOSE_FILE=$SCRIPT_PATH'/docker-compose.yml'
+DOCKER_COMPOSE_TEMPLATE_FILE=$SCRIPT_PATH'/compose/docker-compose-template.yml'
 
 # If there is an argument passed to the script.
 if [ $# -ne 0 ]
@@ -80,6 +82,16 @@ then
         # Import ENV configuration.
         . $DOCKER_ENV_FILE
 
+        # Delete docker_composer file if exists.
+        if [ -f $DOCKER_COMPOSE_FILE ]; then rm $DOCKER_COMPOSE_FILE; fi
+
+        # Generate a new docker-compose file
+        cp $DOCKER_COMPOSE_TEMPLATE_FILE $DOCKER_COMPOSE_FILE
+        sed -i 's/REPLACE_DOMAIN_NAME/'$DOMAIN_NAME'/g' $DOCKER_COMPOSE_FILE
+        sed -i 's/HTTP_PORT/'$HTTP_PORT'/g' $DOCKER_COMPOSE_FILE
+        echo "[Docker Compose]: Regenerate docker compose file finished."
+
+
         # Create new Docker network.
         docker network create proxy.$DOMAIN_NAME
         
@@ -95,11 +107,22 @@ then
             PORT=$HTTP_PORT 
         fi
 
+        if [ "$1" = "--localhost" ] || [ "$1" = "-l" ]
+        then
+          echo ""
+          echo "DO NOT FORGET ADD THOSE LINE BELLOW TO HOST FILE!!!"
+          echo $DOMAIN_NAME" 127.0.0.1"
+          echo $DOMAIN_NAME" 127.0.0.1"
+          echo $DOMAIN_NAME" 127.0.0.1"
+          echo $DOMAIN_NAME" 127.0.0.1"
+        fi
+
         echo "[RUN]: If there is no errors above then these services should be running like a charm!"
         echo "[NGINX/PHP]:  "$PROTOCOL"://"$DOMAIN_NAME":"$PORT
         echo "[TRAEFIK]:    "$PROTOCOL"://traefik."$DOMAIN_NAME":"$PORT
         echo "[PHPMYADMIN]: "$PROTOCOL"://pma."$DOMAIN_NAME":"$PORT
         echo "[PORTAINER]:  "$PROTOCOL"://portainer."$DOMAIN_NAME":"$PORT
+
     fi
 # If there is no argument passed to the script.
 else 
