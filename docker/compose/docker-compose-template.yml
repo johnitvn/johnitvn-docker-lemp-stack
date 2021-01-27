@@ -63,8 +63,8 @@ services:
         expose:
             - "3306"
         volumes:
-            - ../mysql:/var/lib/mysql
-        env_file: ./mysql/.env
+            - mysql/data:/var/lib/mysql
+        env_file: ./mysql/config.ini
         labels:
             - traefik.enable=false
         networks:
